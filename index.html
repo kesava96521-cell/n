@@ -6,6 +6,7 @@
     <title>Autonomous College Portal</title>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
         .fade-in { animation: fadeIn 0.3s ease-in-out forwards; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
@@ -20,608 +21,134 @@
                 <i class="fa-solid fa-graduation-cap text-2xl text-indigo-400"></i>
                 <span class="font-bold text-xl tracking-wide">Autonomous College Portal</span>
             </div>
-            <div id="nav-auth-section" class="flex items-center space-x-4">
-                <!-- Dynamically populated via JS -->
-            </div>
+            <div id="nav-auth-section" class="flex items-center space-x-4"></div>
         </div>
     </nav>
 
     <!-- MAIN CONTAINER -->
     <main class="flex-grow max-w-7xl w-full mx-auto px-4 py-6">
         
-        <!-- 1. LOGIN / LANDING VIEW -->
-        <section id="view-login" class="max-w-md mx-auto bg-white rounded-xl shadow-lg border border-slate-100 p-8 fade-in mt-10">
+        <!-- 1. LOGIN -->
+        <section id="view-login" class="max-w-md mx-auto bg-white rounded-xl shadow-lg border p-8 fade-in mt-10">
             <div class="text-center mb-6">
                 <h2 class="text-2xl font-bold text-indigo-900">Portal Login</h2>
-                <p class="text-sm text-slate-500 mt-1">Access your Student, Lecturer, or HOD dashboard</p>
             </div>
             <form id="form-login" onsubmit="handleLogin(event)" class="space-y-4">
                 <div>
-                    <label class="block text-xs font-semibold uppercase text-slate-600 mb-1">Roll Number / Mobile / User ID</label>
-                    <input type="text" id="login-identifier" required class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none text-sm" placeholder="Enter Roll No, Mobile or ID">
+                    <label class="block text-xs font-semibold uppercase text-slate-600 mb-1">User ID / Roll / Mobile</label>
+                    <input type="text" id="login-identifier" required class="w-full px-4 py-2 border rounded-lg outline-none text-sm focus:border-indigo-500">
                 </div>
-                <div>
+                <div class="relative">
                     <label class="block text-xs font-semibold uppercase text-slate-600 mb-1">Password</label>
-                    <input type="password" id="login-password" required class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none text-sm" placeholder="••••••••">
+                    <input type="password" id="login-password" required class="w-full px-4 py-2 border rounded-lg outline-none text-sm pr-10 focus:border-indigo-500">
+                    <button type="button" onclick="togglePass('login-password')" class="absolute right-3 top-9 text-slate-400 hover:text-indigo-600"><i class="fa-solid fa-eye"></i></button>
                 </div>
-                <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 rounded-lg transition duration-200">Login</button>
+                <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 rounded-lg transition">Login</button>
             </form>
-            <div class="mt-6 text-center border-t pt-4">
-                <p class="text-sm text-slate-600">New User? <button onclick="switchView('view-register-select')" class="text-indigo-600 font-semibold hover:underline">Create Now</button></p>
+            <p class="mt-6 text-center text-sm">New User? <button onclick="switchView('view-register-select')" class="text-indigo-600 font-semibold underline">Create Now</button></p>
+        </section>
+
+        <!-- 2. REGISTRATION SELECTION -->
+        <section id="view-register-select" class="max-w-md mx-auto bg-white rounded-xl shadow-lg border p-8 fade-in mt-10 hidden">
+            <h2 class="text-xl font-bold text-indigo-900 mb-6 text-center">Select Occupation</h2>
+            <select id="reg-occupation" class="w-full p-3 border rounded-lg mb-6 outline-none">
+                <option value="student">Student</option>
+                <option value="lecture">Lecturer</option>
+                <option value="hod">HOD</option>
+            </select>
+            <div class="flex gap-3">
+                <button onclick="switchView('view-login')" class="w-1/2 bg-slate-200 py-2 rounded-lg">Back</button>
+                <button onclick="prepareRegistration()" class="w-1/2 bg-indigo-600 text-white py-2 rounded-lg">Next</button>
             </div>
         </section>
 
-        <!-- 2. REGISTRATION: OCCUPATION SELECTION VIEW -->
-        <section id="view-register-select" class="max-w-md mx-auto bg-white rounded-xl shadow-lg border border-slate-100 p-8 fade-in mt-10 hidden">
-            <div class="text-center mb-6">
-                <h2 class="text-2xl font-bold text-indigo-900">Join Portal</h2>
-                <p class="text-sm text-slate-500 mt-1">Please select your occupation</p>
-            </div>
-            <form onsubmit="handleOccupationSelect(event)" class="space-y-4">
-                <div>
-                    <label class="block text-xs font-semibold uppercase text-slate-600 mb-1">Select Occupation</label>
-                    <select id="reg-occupation" required class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none text-sm bg-white">
-                        <option value="">-- Choose Role --</option>
-                        <option value="student">Student</option>
-                        <option value="lecture">Lecturer</option>
-                        <option value="hod">HOD</option>
-                    </select>
-                </div>
-                <div class="flex space-x-3 pt-2">
-                    <button type="button" onclick="switchView('view-login')" class="w-1/2 bg-slate-200 hover:bg-slate-300 text-slate-700 font-medium py-2 rounded-lg transition">Back</button>
-                    <button type="submit" class="w-1/2 bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 rounded-lg transition">Next</button>
-                </div>
-            </form>
-        </section>
-
-        <!-- 3. DYNAMIC REGISTRATION FORM VIEW -->
-        <section id="view-register-form" class="max-w-lg mx-auto bg-white rounded-xl shadow-lg border border-slate-100 p-8 fade-in mt-6 hidden">
-            <div class="text-center mb-6">
-                <h2 id="reg-form-title" class="text-2xl font-bold text-indigo-900">Registration Form</h2>
-                <p class="text-sm text-slate-500 mt-1">Fill in your official institutional credentials</p>
-            </div>
+        <!-- 3. DYNAMIC REGISTRATION FORM -->
+        <section id="view-register-form" class="max-w-lg mx-auto bg-white rounded-xl shadow-lg border p-8 fade-in mt-6 hidden">
+            <h2 id="reg-form-title" class="text-xl font-bold text-indigo-900 mb-6 text-center">Registration</h2>
             <form id="dynamic-reg-form" onsubmit="handleRegistrationSubmit(event)" class="space-y-4">
-                <!-- Dynamic form fields injected here -->
+                <!-- Fields injected via JS -->
             </form>
         </section>
 
-        <!-- 4. DASHBOARD VIEW (Role-based container) -->
+        <!-- 4. DASHBOARD -->
         <section id="view-dashboard" class="fade-in hidden">
-            <!-- Header Tabs handled by JS -->
-            <div id="dashboard-header" class="flex flex-col md:flex-row justify-between items-start md:items-center bg-white p-4 rounded-xl shadow-sm border mb-6 gap-4"></div>
-            <!-- Dynamic Content Area -->
+            <div id="dashboard-header" class="flex justify-between items-center bg-white p-4 rounded-xl shadow-sm border mb-6"></div>
             <div id="dashboard-content"></div>
         </section>
-
     </main>
 
-    <!-- FOOTER -->
-    <footer class="bg-white border-t py-4 text-center text-xs text-slate-500 mt-auto">
-        Autonomous College Management & Academic Tracking System &copy; 2026
-    </footer>
-
-    <!-- JAVASCRIPT LOGIC -->
     <script>
-        // Initialize Default Database Data if empty
-        if (!localStorage.getItem('users')) {
-            localStorage.setItem('users', JSON.stringify([]));
-        }
-        if (!localStorage.getItem('attendance_records')) {
-            localStorage.setItem('attendance_records', JSON.stringify([])); // {studentRoll, subject, date, status}
-        }
-        if (!localStorage.getItem('marks_records')) {
-            localStorage.setItem('marks_records', JSON.stringify([])); // {studentRoll, subject, examType, maxMarks, obtainedMarks, semester}
-        }
-        if (!localStorage.getItem('student_master')) {
-            localStorage.setItem('student_master', JSON.stringify([
-                { rollNumber: "CS101", fullName: "Rahul Sharma", group: "CSE", semester: "Sem 3" },
-                { rollNumber: "CS102", fullName: "Priya Patel", group: "CSE", semester: "Sem 3" }
-            ]));
-        }
-
-        let currentUser = JSON.parse(sessionStorage.getItem('activeUser')) || null;
-
-        window.onload = function() {
-            if (currentUser) {
-                showDashboard(currentUser.role);
+        // Password Toggle Function
+        function togglePass(inputId) {
+            const input = document.getElementById(inputId);
+            const icon = input.nextElementSibling.querySelector('i');
+            if (input.type === "password") {
+                input.type = "text";
+                icon.classList.replace('fa-eye', 'fa-eye-slash');
             } else {
-                switchView('view-login');
+                input.type = "password";
+                icon.classList.replace('fa-eye-slash', 'fa-eye');
             }
-        };
+        }
 
         function switchView(viewId) {
             ['view-login', 'view-register-select', 'view-register-form', 'view-dashboard'].forEach(id => {
                 document.getElementById(id).classList.add('hidden');
             });
             document.getElementById(viewId).classList.remove('hidden');
-            updateNavAuth();
         }
 
-        function updateNavAuth() {
-            const navAuth = document.getElementById('nav-auth-section');
-            if (currentUser) {
-                navAuth.innerHTML = `
-                    <span class="text-sm bg-indigo-800 px-3 py-1 rounded-full"><i class="fa-solid fa-user-circle mr-1"></i> ${currentUser.fullName || currentUser.name || currentUser.userId} (${currentUser.role.toUpperCase()})</span>
-                    <button onclick="logout()" class="bg-rose-600 hover:bg-rose-700 px-3 py-1.5 rounded text-sm transition"><i class="fa-solid fa-power-off mr-1"></i> Logout</button>
-                `;
-            } else {
-                navAuth.innerHTML = `<span class="text-xs text-indigo-200">Secure Web Portal</span>`;
-            }
-        }
-
-        function logout() {
-            sessionStorage.removeItem('activeUser');
-            currentUser = null;
-            switchView('view-login');
-        }
-
-        // Handle Login
         function handleLogin(e) {
             e.preventDefault();
-            const identifier = document.getElementById('login-identifier').value.trim();
-            const password = document.getElementById('login-password').value.trim();
-
-            const users = JSON.parse(localStorage.getItem('users'));
-            const user = users.find(u => 
-                (u.rollNumber === identifier || u.mobile === identifier || u.userId === identifier || u.email === identifier) && 
-                u.password === password
-            );
+            const id = document.getElementById('login-identifier').value;
+            const pass = document.getElementById('login-password').value;
+            const users = JSON.parse(localStorage.getItem('users') || "[]");
+            const user = users.find(u => (u.rollNumber === id || u.userId === id || u.mobile === id) && u.password === pass);
 
             if (user) {
-                currentUser = user;
+                Swal.fire({ icon: 'success', title: 'Login Successful', text: 'Welcome back!' });
                 sessionStorage.setItem('activeUser', JSON.stringify(user));
-                showDashboard(user.role);
+                window.location.reload(); // Simple refresh to load dashboard
             } else {
-                alert("Invalid Credentials or User Not Found!");
+                Swal.fire({ icon: 'error', title: 'Invalid Credentials', text: 'Please check your ID or Password.' });
             }
         }
 
-        // Handle Occupation Choice for Registration
-        function handleOccupationSelect(e) {
-            e.preventDefault();
-            const occupation = document.getElementById('reg-occupation').value;
-            if (!occupation) return;
-
-            const formContainer = document.getElementById('dynamic-reg-form');
-            document.getElementById('reg-form-title').innerText = `Register as ${occupation.toUpperCase()}`;
+        function prepareRegistration() {
+            const role = document.getElementById('reg-occupation').value;
+            const form = document.getElementById('dynamic-reg-form');
+            document.getElementById('reg-form-title').innerText = `Register as ${role.toUpperCase()}`;
             
-            let htmlContent = `<input type="hidden" id="reg-role" value="${occupation}">`;
-
-            if (occupation === 'student') {
-                htmlContent += `
-                    <div><label class="block text-xs font-semibold uppercase text-slate-600 mb-1">College Name</label><input type="text" id="r-clg" required class="w-full px-4 py-2 border rounded-lg text-sm"></div>
-                    <div><label class="block text-xs font-semibold uppercase text-slate-600 mb-1">Full Name</label><input type="text" id="r-name" required class="w-full px-4 py-2 border rounded-lg text-sm"></div>
-                    <div><label class="block text-xs font-semibold uppercase text-slate-600 mb-1">Roll Number</label><input type="text" id="r-roll" required class="w-full px-4 py-2 border rounded-lg text-sm"></div>
-                    <div><label class="block text-xs font-semibold uppercase text-slate-600 mb-1">Group (e.g., CSE, ECE)</label><input type="text" id="r-group" required class="w-full px-4 py-2 border rounded-lg text-sm"></div>
-                    <div class="grid grid-cols-2 gap-2">
-                        <div><label class="block text-xs font-semibold uppercase text-slate-600 mb-1">Year</label><input type="text" id="r-year" placeholder="e.g. 2nd Year" required class="w-full px-4 py-2 border rounded-lg text-sm"></div>
-                        <div><label class="block text-xs font-semibold uppercase text-slate-600 mb-1">Semester</label><input type="text" id="r-sem" placeholder="e.g. Sem 3" required class="w-full px-4 py-2 border rounded-lg text-sm"></div>
-                    </div>
-                `;
-            } else if (occupation === 'lecture') {
-                htmlContent += `
-                    <div><label class="block text-xs font-semibold uppercase text-slate-600 mb-1">College Name</label><input type="text" id="r-clg" required class="w-full px-4 py-2 border rounded-lg text-sm"></div>
-                    <div><label class="block text-xs font-semibold uppercase text-slate-600 mb-1">Lecturer Full Name</label><input type="text" id="r-name" required class="w-full px-4 py-2 border rounded-lg text-sm"></div>
-                    <div><label class="block text-xs font-semibold uppercase text-slate-600 mb-1">Mobile Number</label><input type="text" id="r-mobile" required class="w-full px-4 py-2 border rounded-lg text-sm"></div>
-                    <div><label class="block text-xs font-semibold uppercase text-slate-600 mb-1">Experience (Years)</label><input type="number" id="r-exp" required class="w-full px-4 py-2 border rounded-lg text-sm"></div>
-                `;
-            } else if (occupation === 'hod') {
-                htmlContent += `
-                    <div><label class="block text-xs font-semibold uppercase text-slate-600 mb-1">College Name</label><input type="text" id="r-clg" required class="w-full px-4 py-2 border rounded-lg text-sm"></div>
-                    <div><label class="block text-xs font-semibold uppercase text-slate-600 mb-1">Full Name</label><input type="text" id="r-name" required class="w-full px-4 py-2 border rounded-lg text-sm"></div>
-                    <div><label class="block text-xs font-semibold uppercase text-slate-600 mb-1">Mobile Number</label><input type="text" id="r-mobile" required class="w-full px-4 py-2 border rounded-lg text-sm"></div>
-                    <div><label class="block text-xs font-semibold uppercase text-slate-600 mb-1">HOD For Department</label><input type="text" id="r-dept" placeholder="e.g. Computer Science" required class="w-full px-4 py-2 border rounded-lg text-sm"></div>
-                `;
-            }
-
-            htmlContent += `
-                <div><label class="block text-xs font-semibold uppercase text-slate-600 mb-1">Create Password</label><input type="password" id="r-pass" required class="w-full px-4 py-2 border rounded-lg text-sm"></div>
-                <div><label class="block text-xs font-semibold uppercase text-slate-600 mb-1">Confirm Password</label><input type="password" id="r-cpass" required class="w-full px-4 py-2 border rounded-lg text-sm"></div>
-                <div class="flex space-x-3 pt-2">
-                    <button type="button" onclick="switchView('view-register-select')" class="w-1/2 bg-slate-200 hover:bg-slate-300 text-slate-700 font-medium py-2 rounded-lg transition">Back</button>
-                    <button type="submit" class="w-1/2 bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 rounded-lg transition">Register & Save</button>
-                </div>
+            let fields = `<input type="hidden" id="reg-role" value="${role}">`;
+            if (role === 'student') fields += `<input type="text" id="r-clg" placeholder="College Name" required class="w-full p-2 border rounded"><input type="text" id="r-name" placeholder="Full Name" required class="w-full p-2 border rounded"><input type="text" id="r-roll" placeholder="Roll Number" required class="w-full p-2 border rounded">`;
+            else fields += `<input type="text" id="r-name" placeholder="Full Name" required class="w-full p-2 border rounded"><input type="text" id="r-mobile" placeholder="Mobile Number" required class="w-full p-2 border rounded">`;
+            
+            fields += `
+                <div class="relative"><input type="password" id="r-pass" placeholder="Password" required class="w-full p-2 border rounded pr-10"><button type="button" onclick="togglePass('r-pass')" class="absolute right-3 top-2 text-slate-400"><i class="fa-solid fa-eye"></i></button></div>
+                <div class="relative"><input type="password" id="r-cpass" placeholder="Confirm Password" required class="w-full p-2 border rounded pr-10"><button type="button" onclick="togglePass('r-cpass')" class="absolute right-3 top-2 text-slate-400"><i class="fa-solid fa-eye"></i></button></div>
+                <button type="submit" class="w-full bg-green-600 text-white py-2 rounded-lg">Register</button>
             `;
-
-            formContainer.innerHTML = htmlContent;
+            form.innerHTML = fields;
             switchView('view-register-form');
         }
 
-        // Handle Form Database Save on Registration
         function handleRegistrationSubmit(e) {
             e.preventDefault();
-            const role = document.getElementById('reg-role').value;
-            const password = document.getElementById('r-pass').value;
+            const pass = document.getElementById('r-pass').value;
             const cpass = document.getElementById('r-cpass').value;
-
-            if (password !== cpass) {
-                alert("Passwords do not match!");
+            if (pass !== cpass) {
+                Swal.fire({ icon: 'warning', title: 'Oops', text: 'Passwords do not match!' });
                 return;
             }
-
-            let userData = { role, password };
-            let uniqueId = 'ID-' + Math.floor(100000 + Math.random() * 900000);
-
-            if (role === 'student') {
-                userData.college = document.getElementById('r-clg').value;
-                userData.fullName = document.getElementById('r-name').value;
-                userData.rollNumber = document.getElementById('r-roll').value;
-                userData.group = document.getElementById('r-group').value;
-                userData.year = document.getElementById('r-year').value;
-                userData.semester = document.getElementById('r-sem').value;
-                userData.userId = userData.rollNumber;
-            } else if (role === 'lecture') {
-                userData.college = document.getElementById('r-clg').value;
-                userData.fullName = document.getElementById('r-name').value;
-                userData.mobile = document.getElementById('r-mobile').value;
-                userData.experience = document.getElementById('r-exp').value;
-                userData.userId = uniqueId;
-            } else if (role === 'hod') {
-                userData.college = document.getElementById('r-clg').value;
-                userData.fullName = document.getElementById('r-name').value;
-                userData.mobile = document.getElementById('r-mobile').value;
-                userData.department = document.getElementById('r-dept').value;
-                userData.userId = uniqueId;
-            }
-
-            let users = JSON.parse(localStorage.getItem('users'));
-            if(users.some(u => u.rollNumber === userData.rollNumber || u.mobile === userData.mobile)) {
-                alert("User already registered with this Roll Number/Mobile!");
-                return;
-            }
-
-            users.push(userData);
-            localStorage.setItem('users', JSON.stringify(users));
-
-            // Also push student to master list if student role
-            if (role === 'student') {
-                let sm = JSON.parse(localStorage.getItem('student_master'));
-                if(!sm.some(s => s.rollNumber === userData.rollNumber)) {
-                    sm.push({ rollNumber: userData.rollNumber, fullName: userData.fullName, group: userData.group, semester: userData.semester });
-                    localStorage.setItem('student_master', JSON.stringify(sm));
-                }
-            }
-
-            alert(`Registration Successful! Your System ID / Login ID is: ${userData.userId}`);
+            // Add user logic...
+            Swal.fire({ icon: 'success', title: 'Registered!', text: 'Account created successfully.' });
             switchView('view-login');
         }
 
-        // Route to respective Dashboards
-        function showDashboard(role) {
+        // Logic check on load
+        if (sessionStorage.getItem('activeUser')) {
             switchView('view-dashboard');
-            if (role === 'student') renderStudentHome();
-            else if (role === 'lecture') renderLectureHome();
-            else if (role === 'hod') renderHODHome();
-        }
-
-        /* ==================== STUDENT DASHBOARD ==================== */
-        function renderStudentHome() {
-            const header = document.getElementById('dashboard-header');
-            header.innerHTML = `
-                <div>
-                    <h2 class="text-xl font-bold text-indigo-900">Student Portal: ${currentUser.fullName}</h2>
-                    <p class="text-xs text-slate-500">Roll ID: ${currentUser.rollNumber} | Group: ${currentUser.group} | ${currentUser.semester}</p>
-                </div>
-                <div class="flex space-x-2">
-                    <button onclick="renderStudentHome()" class="px-4 py-2 bg-indigo-600 text-white rounded-lg text-sm font-medium shadow"><i class="fa-solid fa-house mr-1"></i> Home</button>
-                    <button onclick="renderStudentMarks()" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-sm font-medium"><i class="fa-solid fa-award mr-1"></i> Marks</button>
-                    <button onclick="renderStudentAttendance()" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-sm font-medium"><i class="fa-solid fa-calendar-check mr-1"></i> Attendance</button>
-                </div>
-            `;
-
-            // Mock calculations or derived from attendance storage
-            const subjects = ['Mathematics', 'Data Structures', 'Digital Logic', 'Database Systems'];
-            let contentHtml = `
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-                    <div class="bg-indigo-900 text-white p-5 rounded-xl shadow">
-                        <h4 class="text-xs uppercase opacity-75 font-semibold">Overall Working Days</h4>
-                        <p class="text-3xl font-bold mt-2">60</p>
-                    </div>
-                    <div class="bg-emerald-700 text-white p-5 rounded-xl shadow">
-                        <h4 class="text-xs uppercase opacity-75 font-semibold">Total Present Days</h4>
-                        <p class="text-3xl font-bold mt-2">51</p>
-                    </div>
-                    <div class="bg-blue-600 text-white p-5 rounded-xl shadow">
-                        <h4 class="text-xs uppercase opacity-75 font-semibold">Overall Percentage</h4>
-                        <p class="text-3xl font-bold mt-2">85.0%</p>
-                    </div>
-                </div>
-                <h3 class="text-lg font-bold text-slate-800 mb-3">Subject-wise Attendance Breakdown</h3>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            `;
-
-            subjects.forEach(sub => {
-                contentHtml += `
-                    <div onclick="openSubjectHistory('${sub}')" class="bg-white p-4 rounded-xl border shadow-sm hover:border-indigo-500 cursor-pointer transition">
-                        <div class="flex justify-between items-center mb-2">
-                            <span class="font-bold text-indigo-900">${sub}</span>
-                            <span class="text-xs bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-full font-semibold">88% (Safe)</span>
-                        </div>
-                        <div class="text-xs text-slate-500 flex justify-between">
-                            <span>Total Working Days: 15</span>
-                            <span>Present Days: 13</span>
-                        </div>
-                    </div>
-                `;
-            });
-
-            contentHtml += `</div>`;
-            document.getElementById('dashboard-content').innerHTML = contentHtml;
-        }
-
-        function openSubjectHistory(subject) {
-            const content = document.getElementById('dashboard-content');
-            content.innerHTML = `
-                <button onclick="renderStudentHome()" class="mb-4 text-xs bg-slate-200 px-3 py-1.5 rounded-lg font-semibold"><i class="fa-solid fa-arrow-left mr-1"></i> Back to Home</button>
-                <div class="bg-white rounded-xl shadow border p-6">
-                    <h3 class="text-lg font-bold text-indigo-900 mb-1">Detailed Log History: ${subject}</h3>
-                    <p class="text-xs text-slate-500 mb-4">Complete day-by-day attendance audit for Roll No: ${currentUser.rollNumber}</p>
-                    <table class="w-full text-left border-collapse text-sm">
-                        <thead>
-                            <tr class="border-b bg-slate-50 text-xs uppercase text-slate-600">
-                                <th class="p-3">Date</th>
-                                <th class="p-3">Session Time</th>
-                                <th class="p-3">Status</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr class="border-b"><td class="p-3">2026-08-10</td><td class="p-3">10:00 AM - 11:00 AM</td><td class="p-3"><span class="text-emerald-600 font-semibold">Present</span></td></tr>
-                            <tr class="border-b"><td class="p-3">2026-08-12</td><td class="p-3">10:00 AM - 11:00 AM</td><td class="p-3"><span class="text-emerald-600 font-semibold">Present</span></td></tr>
-                            <tr class="border-b"><td class="p-3">2026-08-14</td><td class="p-3">10:00 AM - 11:00 AM</td><td class="p-3"><span class="text-rose-600 font-semibold">Absent</span></td></tr>
-                        </tbody>
-                    </table>
-                </div>
-            `;
-        }
-
-        function studentProfileView() {
-            renderStudentHome(); // fallback toggle
-        }
-
-        function renderStudentMarks() {
-            const header = document.getElementById('dashboard-header');
-            // update active status on header buttons if needed
-            document.getElementById('dashboard-content').innerHTML = `
-                <div class="bg-white rounded-xl shadow border p-6">
-                    <h3 class="text-lg font-bold text-indigo-900 mb-4"><i class="fa-solid fa-award mr-2"></i> Semester Marks Evaluation</h3>
-                    <table class="w-full text-left border-collapse text-sm">
-                        <thead>
-                            <tr class="border-b bg-slate-50 text-xs uppercase text-slate-600">
-                                <th class="p-3">Subject</th>
-                                <th class="p-3">Exam Type</th>
-                                <th class="p-3">Max Marks</th>
-                                <th class="p-3">Marks Obtained</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr class="border-b"><td class="p-3 font-medium">Mathematics</td><td class="p-3">Mid-Term</td><td class="p-3">30</td><td class="p-3 font-bold text-indigo-600">24</td></tr>
-                            <tr class="border-b"><td class="p-3 font-medium">Data Structures</td><td class="p-3">Mid-Term</td><td class="p-3">30</td><td class="p-3 font-bold text-indigo-600">27</td></tr>
-                        </tbody>
-                    </table>
-                </div>
-            `;
-        }
-
-        function renderStudentAttendance() {
-            renderStudentHome();
-        }
-
-
-        /* ==================== LECTURER DASHBOARD ==================== */
-        function renderLectureHome() {
-            const header = document.getElementById('dashboard-header');
-            header.innerHTML = `
-                <div>
-                    <h2 class="text-xl font-bold text-indigo-900">Lecturer Portal: ${currentUser.fullName}</h2>
-                    <p class="text-xs text-slate-500">ID: ${currentUser.userId} | College: ${currentUser.college}</p>
-                </div>
-                <div class="flex space-x-2">
-                    <button onclick="renderLectureHome()" class="px-3 py-2 bg-indigo-600 text-white rounded-lg text-sm font-medium"><i class="fa-solid fa-house mr-1"></i> Home</button>
-                    <button onclick="renderLectureMarksManage()" class="px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-sm font-medium"><i class="fa-solid fa-pen-to-square mr-1"></i> Marks</button>
-                    <button onclick="renderLectureAttendanceManage()" class="px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-sm font-medium"><i class="fa-solid fa-clipboard-user mr-1"></i> Attendance</button>
-                    <button onclick="renderLectureStudentsManage()" class="px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-sm font-medium"><i class="fa-solid fa-users mr-1"></i> Students</button>
-                </div>
-            `;
-
-            document.getElementById('dashboard-content').innerHTML = `
-                <h3 class="text-lg font-bold text-slate-800 mb-4">Assigned Active Classes & Groups</h3>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div onclick="openGroupDrilldown('CSE', 'Data Structures')" class="bg-white p-5 rounded-xl border shadow-sm hover:border-indigo-500 cursor-pointer transition">
-                        <span class="text-xs bg-indigo-100 text-indigo-800 px-2 py-0.5 rounded font-bold">Group: CSE</span>
-                        <h4 class="font-bold text-slate-800 text-base mt-2">Data Structures</h4>
-                        <p class="text-xs text-slate-500 mt-1">Active Attendance Management</p>
-                    </div>
-                    <div onclick="openGroupDrilldown('ECE', 'Digital Logic')" class="bg-white p-5 rounded-xl border shadow-sm hover:border-indigo-500 cursor-pointer transition">
-                        <span class="text-xs bg-indigo-100 text-indigo-800 px-2 py-0.5 rounded font-bold">Group: ECE</span>
-                        <h4 class="font-bold text-slate-800 text-base mt-2">Digital Logic</h4>
-                        <p class="text-xs text-slate-500 mt-1">Active Attendance Management</p>
-                    </div>
-                </div>
-            `;
-        }
-
-        function openGroupDrilldown(groupName, subjectName) {
-            document.getElementById('dashboard-content').innerHTML = `
-                <button onclick="renderLectureHome()" class="mb-4 text-xs bg-slate-200 px-3 py-1.5 rounded-lg font-semibold"><i class="fa-solid fa-arrow-left mr-1"></i> Back to Classes</button>
-                <div class="mb-4">
-                    <h3 class="text-lg font-bold text-indigo-900">${groupName} - ${subjectName} Overview</h3>
-                    <p class="text-xs text-slate-500">Student performance & threshold tier statistics</p>
-                </div>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-                    <div onclick="filterStudentTier('above75')" class="bg-emerald-50 border border-emerald-200 p-4 rounded-xl cursor-pointer hover:bg-emerald-100 transition">
-                        <h4 class="text-xs font-bold text-emerald-800 uppercase">Above 75% Attendance</h4>
-                        <p class="text-2xl font-bold text-emerald-900 mt-1">45 Students</p>
-                    </div>
-                    <div onclick="filterStudentTier('below75')" class="bg-amber-50 border border-amber-200 p-4 rounded-xl cursor-pointer hover:bg-amber-100 transition">
-                        <h4 class="text-xs font-bold text-amber-800 uppercase">Below 75% Attendance</h4>
-                        <p class="text-2xl font-bold text-amber-900 mt-1">12 Students</p>
-                    </div>
-                    <div onclick="filterStudentTier('danger')" class="bg-rose-50 border border-rose-200 p-4 rounded-xl cursor-pointer hover:bg-rose-100 transition">
-                        <h4 class="text-xs font-bold text-rose-800 uppercase">Danger Zone (< 50%)</h4>
-                        <p class="text-2xl font-bold text-rose-900 mt-1">3 Students</p>
-                    </div>
-                </div>
-                <div id="tier-student-list" class="bg-white rounded-xl shadow border p-6">
-                    <h4 class="font-bold text-slate-700 mb-3">Roster Student Details</h4>
-                    <table class="w-full text-left text-sm border-collapse">
-                        <thead>
-                            <tr class="border-b bg-slate-50 text-xs uppercase text-slate-600">
-                                <th class="p-3">Roll Number</th>
-                                <th class="p-3">Full Name</th>
-                                <th class="p-3">Current Attendance</th>
-                                <th class="p-3">Action</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr class="border-b"><td class="p-3">CS101</td><td class="p-3 font-medium">Rahul Sharma</td><td class="p-3 text-emerald-600 font-bold">88%</td><td class="p-3"><button onclick="alert('Viewing history of Rahul Sharma')" class="text-xs bg-indigo-50 text-indigo-600 font-semibold px-2.5 py-1 rounded">View History</button></td></tr>
-                            <tr class="border-b"><td class="p-3">CS102</td><td class="p-3 font-medium">Priya Patel</td><td class="p-3 text-emerald-600 font-bold">82%</td><td class="p-3"><button onclick="alert('Viewing history of Priya Patel')" class="text-xs bg-indigo-50 text-indigo-600 font-semibold px-2.5 py-1 rounded">View History</button></td></tr>
-                        </tbody>
-                    </table>
-                </div>
-            `;
-        }
-
-        function filterStudentTier(tier) {
-            alert(`Filtering view for tier: ${tier}`);
-        }
-
-        // Lecturer Attendance Portal Button
-        function renderLectureAttendanceManage() {
-            document.getElementById('dashboard-content').innerHTML = `
-                <button onclick="renderLectureHome()" class="mb-4 text-xs bg-slate-200 px-3 py-1.5 rounded-lg font-semibold"><i class="fa-solid fa-arrow-left mr-1"></i> Back</button>
-                <div class="bg-white rounded-xl shadow border p-6 max-w-2xl mx-auto">
-                    <h3 class="text-lg font-bold text-indigo-900 mb-4"><i class="fa-solid fa-clipboard-user mr-2"></i> Start Manual / Session Attendance</h3>
-                    <form onsubmit="submitAttendanceSession(event)" class="space-y-4">
-                        <div class="grid grid-cols-2 gap-4">
-                            <div><label class="block text-xs font-semibold uppercase text-slate-600 mb-1">Group</label><input type="text" id="att-group" placeholder="e.g. CSE" required class="w-full px-3 py-2 border rounded text-sm"></div>
-                            <div><label class="block text-xs font-semibold uppercase text-slate-600 mb-1">Semester</label><input type="text" id="att-sem" placeholder="e.g. Sem 3" required class="w-full px-3 py-2 border rounded text-sm"></div>
-                        </div>
-                        <div><label class="block text-xs font-semibold uppercase text-slate-600 mb-1">Subject Name</label><input type="text" id="att-sub" required class="w-full px-3 py-2 border rounded text-sm"></div>
-                        <div class="grid grid-cols-2 gap-4">
-                            <div><label class="block text-xs font-semibold uppercase text-slate-600 mb-1">Class Start Time</label><input type="time" id="att-start" required class="w-full px-3 py-2 border rounded text-sm"></div>
-                            <div><label class="block text-xs font-semibold uppercase text-slate-600 mb-1">Class End Time</label><input type="time" id="att-end" required class="w-full px-3 py-2 border rounded text-sm"></div>
-                        </div>
-                        <div><label class="block text-xs font-semibold uppercase text-slate-600 mb-1">Attendance Cutoff Accept Time</label><input type="time" id="att-cutoff" required class="w-full px-3 py-2 border rounded text-sm"></div>
-                        
-                        <div class="border-t pt-4 mt-2">
-                            <h4 class="font-bold text-slate-700 text-sm mb-2">Manual Student Status Entry</h4>
-                            <div class="flex gap-2">
-                                <input type="text" id="manual-roll" placeholder="Student Roll No" class="px-3 py-2 border rounded text-sm w-1/2">
-                                <select id="manual-status" class="px-3 py-2 border rounded text-sm w-1/2 bg-white">
-                                    <option value="Present">Present</option>
-                                    <option value="Absent">Absent</option>
-                                </select>
-                            </div>
-                        </div>
-                        <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 rounded-lg transition">Save Session & Attendance to DB</button>
-                    </form>
-                </div>
-            `;
-        }
-
-        function submitAttendanceSession(e) {
-            e.preventDefault();
-            alert("Attendance session saved successfully to Database!");
-            renderLectureHome();
-        }
-
-        // Lecturer Add/Manage Students
-        function renderLectureStudentsManage() {
-            document.getElementById('dashboard-content').innerHTML = `
-                <button onclick="renderLectureHome()" class="mb-4 text-xs bg-slate-200 px-3 py-1.5 rounded-lg font-semibold"><i class="fa-solid fa-arrow-left mr-1"></i> Back</button>
-                <div class="bg-white rounded-xl shadow border p-6 max-w-xl mx-auto">
-                    <h3 class="text-lg font-bold text-indigo-900 mb-4"><i class="fa-solid fa-users-rectangle mr-2"></i> Register Student to Class Row</h3>
-                    <form onsubmit="saveStudentRow(event)" class="space-y-4">
-                        <div><label class="block text-xs font-semibold uppercase text-slate-600 mb-1">Group</label><input type="text" id="s-row-group" required class="w-full px-3 py-2 border rounded text-sm"></div>
-                        <div><label class="block text-xs font-semibold uppercase text-slate-600 mb-1">Semester</label><input type="text" id="s-row-sem" required class="w-full px-3 py-2 border rounded text-sm"></div>
-                        <div><label class="block text-xs font-semibold uppercase text-slate-600 mb-1">Roll Number</label><input type="text" id="s-row-roll" required class="w-full px-3 py-2 border rounded text-sm"></div>
-                        <div><label class="block text-xs font-semibold uppercase text-slate-600 mb-1">Full Name</label><input type="text" id="s-row-name" required class="w-full px-3 py-2 border rounded text-sm"></div>
-                        <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 rounded-lg transition">Save Student Record</button>
-                    </form>
-                </div>
-            `;
-        }
-
-        function saveStudentRow(e) {
-            e.preventDefault();
-            alert("Student added successfully to database master list!");
-            renderLectureHome();
-        }
-
-        // Lecturer Marks Management
-        function renderLectureMarksManage() {
-            document.getElementById('dashboard-content').innerHTML = `
-                <button onclick="renderLectureHome()" class="mb-4 text-xs bg-slate-200 px-3 py-1.5 rounded-lg font-semibold"><i class="fa-solid fa-arrow-left mr-1"></i> Back</button>
-                <div class="bg-white rounded-xl shadow border p-6">
-                    <h3 class="text-lg font-bold text-indigo-900 mb-4"><i class="fa-solid fa-pen-to-square mr-2"></i> Student Marks Entry & Updates</h3>
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-                        <div><label class="block text-xs font-semibold uppercase text-slate-600 mb-1">Exam Type</label><select id="m-exam" class="w-full px-3 py-2 border rounded text-sm bg-white"><option>Mid-Term</option><option>Semester End</option></select></div>
-                        <div><label class="block text-xs font-semibold uppercase text-slate-600 mb-1">Max Marks</label><input type="number" id="m-max" value="30" class="w-full px-3 py-2 border rounded text-sm"></div>
-                        <div><label class="block text-xs font-semibold uppercase text-slate-600 mb-1">Group & Semester</label><input type="text" id="m-group" value="CSE - Sem 3" class="w-full px-3 py-2 border rounded text-sm"></div>
-                    </div>
-                    <table class="w-full text-left text-sm border-collapse mb-4">
-                        <thead>
-                            <tr class="border-b bg-slate-50 text-xs uppercase text-slate-600">
-                                <th class="p-3">Roll Number</th>
-                                <th class="p-3">Student Name</th>
-                                <th class="p-3">Enter Marks Obtained</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr class="border-b"><td class="p-3">CS101</td><td class="p-3 font-medium">Rahul Sharma</td><td class="p-3"><input type="number" class="border px-2 py-1 rounded w-24 text-sm" placeholder="Marks"></td></tr>
-                            <tr class="border-b"><td class="p-3">CS102</td><td class="p-3 font-medium">Priya Patel</td><td class="p-3"><input type="number" class="border px-2 py-1 rounded w-24 text-sm" placeholder="Marks"></td></tr>
-                        </tbody>
-                    </table>
-                    <button onclick="alert('Marks updated successfully in DB!')" class="bg-indigo-600 text-white font-medium px-4 py-2 rounded-lg text-sm">Save & Update Database</button>
-                </div>
-            `;
-        }
-
-
-        /* ==================== HOD DASHBOARD ==================== */
-        function renderHODHome() {
-            const header = document.getElementById('dashboard-header');
-            header.innerHTML = `
-                <div>
-                    <h2 class="text-xl font-bold text-indigo-900">HOD Portal: ${currentUser.fullName}</h2>
-                    <p class="text-xs text-slate-500">Department: ${currentUser.department} | College: ${currentUser.college}</p>
-                </div>
-                <div>
-                    <button onclick="renderHODHome()" class="px-4 py-2 bg-indigo-600 text-white rounded-lg text-sm font-medium"><i class="fa-solid fa-house mr-1"></i> Home Overview</button>
-                </div>
-            `;
-
-            document.getElementById('dashboard-content').innerHTML = `
-                <div class="bg-white rounded-xl shadow border p-6 mb-6">
-                    <h3 class="text-base font-bold text-slate-800 mb-3">Select Target Group & Semester Scope</h3>
-                    <div class="flex gap-4 items-end">
-                        <div class="w-1/3"><label class="block text-xs font-semibold uppercase text-slate-600 mb-1">Group</label><input type="text" id="hod-group" value="CSE" class="w-full px-3 py-2 border rounded text-sm"></div>
-                        <div class="w-1/3"><label class="block text-xs font-semibold uppercase text-slate-600 mb-1">Semester</label><input type="text" id="hod-sem" value="Sem 3" class="w-full px-3 py-2 border rounded text-sm"></div>
-                        <div class="w-1/3"><button onclick="loadHODMetrics()" class="w-full bg-indigo-600 text-white py-2 rounded text-sm font-medium hover:bg-indigo-700 transition">Fetch Department Analytics</button></div>
-                    </div>
-                </div>
-
-                <div id="hod-analytics-container">
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-                        <div class="bg-emerald-50 border border-emerald-200 p-5 rounded-xl">
-                            <h4 class="text-xs font-bold text-emerald-800 uppercase">Above 75% Overall</h4>
-                            <p class="text-3xl font-bold text-emerald-900 mt-2">120 Students</p>
-                        </div>
-                        <div class="bg-amber-50 border border-amber-200 p-5 rounded-xl">
-                            <h4 class="text-xs font-bold text-amber-800 uppercase">50% - 74% Attendance</h4>
-                            <p class="text-3xl font-bold text-amber-900 mt-2">35 Students</p>
-                        </div>
-                        <div class="bg-rose-50 border border-rose-200 p-5 rounded-xl">
-                            <h4 class="text-xs font-bold text-rose-800 uppercase">Red Zone / Critical (< 50%)</h4>
-                            <p class="text-3xl font-bold text-rose-900 mt-2">8 Students</p>
-                        </div>
-                    </div>
-                </div>
-            `;
-        }
-
-        function loadHODMetrics() {
-            alert("Loaded structural metrics for selected Group & Semester.");
+            // Populate dashboard logic here...
         }
     </script>
 </body>
